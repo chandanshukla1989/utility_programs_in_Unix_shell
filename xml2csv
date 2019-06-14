@@ -1,0 +1,35 @@
+#!/bin/bash
+cat $1 > for_header
+firstline=`cat $1 |head -1`
+lastline=`echo ${firstline:0:1}`;lastline=$lastline"\\";lastline=$lastline"/";lastline=$lastline${firstline:1:-1};lastline=$lastline">"
+sed  -i -e "s/$firstline//g" $1
+sed  -i -e "s/$lastline//g" $1
+cat $1|tr '\n' ',' > temp
+cat temp > $1
+rm -rf temp
+sed -i -e 's/^,//g' $1
+sed -i -e 's/,$//g' $1
+sed -i -e 's/,,/\n/g' $1
+sed -i -e 's/^,//g' $1
+sed -i -e 's/,$//g' $1
+cat $1|grep -v ^$ >> temp
+
+cat for_header | cut -d"<" -f 2|cut -d">" -f1|sort|uniq|grep -v "/"|sed "1 d"|tr '\n' ','|sed 's/,$//g' > header
+sed -e 's/<[^>]*>//g' $1 > data
+#cat $1 |grep  '<'|cut -d"<" -f 2|cut -d">" -f2|grep -v ^$|tr '\n' ','|sed 's/,$//g' > data
+#cat header > file
+#cat data >> file
+columnlist=`cat header`
+columns=($(echo $columnlist | tr ',' "\n"))
+echo ${columns[0]}
+length=${#columns[@]}
+echo $length
+#for i in $(seq 0 $((${#columns[@]}-1))); do     replace[$seq]="<\/"${a[$seq]}">"",""<"${a[$(($seq+1))]}">";tmp=`echo ${replace[$((seq))]}|tr -d \'\"` cat $1|grep -v ^$ > ~/temp; cmd="sed -i  ':a;N;$!ba;s/$tmp|/,/g' temp"; eval $cmd; done
+
+cat header > file
+echo -e "\n">>file
+cat data >> file
+cat file|grep -v ^$ > temp
+cat temp > file
+
+#cat $1|cut -d'>' -f2|cut -d '<' -f1|grep -v ^$ > ~/temp
