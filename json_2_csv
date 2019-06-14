@@ -1,0 +1,50 @@
+#!/bin/bash
+
+sed -i -e "s/ //g" $1
+cat $1|tr '\t' ' ' > temp
+cat temp > $1
+sed -i -e "s/ //g" $1
+cat $1 > for_header
+cat $1|tr '\n' ' ' > temp
+cat temp > $1
+sed -i -e 's/ //g' $1
+sed -i -e 's/,{/,\n{/g' $1
+head_1=`cat $1|head -1`
+echo $head_1 > header
+sed -i -e 's/,$//g' header
+sed -i -e 's/{//g' header
+sed -i -e 's/}//g' header
+sed -i -e 's/,/\n/g' header
+cat header|cut -d: -f1 > temp
+cat temp > header
+cat header > header_trans
+sed -i -e 's/$/:/g' header_trans
+cat header|tr '\n' ',' > temp
+cat temp > header
+#cat header > header_trans
+#sed -i -e 's/"//g' header
+sed -i -e 's/,$//g' header
+sed -i -e 's/{//g' $1
+sed -i -e 's/}//g' $1
+sed -i -e 's/,$//g' $1
+columnlist=`cat header`
+columns=($(echo $columnlist | tr ',' "\n"))
+echo ${columns[0]}
+length=${#columns[@]}
+echo $length
+iterate="/home/ubuntu/header_trans"
+while IFS= read -r line
+do
+sed -i -e "s/$line//g" $1
+done <"$iterate"
+cat $1> data
+cat header > file
+echo -e "\n">>file
+cat data >> file
+cat file|grep -v ^$ > temp
+cat temp > file
+
+#for i in $(seq 0 $((${#columns[@]}-1))); do     echo $((seq));replace[$seq]="/""${columns[$seq]}"/":";echo ${replace[$((seq))]};d -i -e "s/${replace[$seq]}//g" $1 > data; done
+
+#cat $1 |awk -F"[{}]" '{print $2}' > temp
+#cat temp > $1
